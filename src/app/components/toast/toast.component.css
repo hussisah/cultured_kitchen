@@ -1,0 +1,10 @@
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #bef264;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: black;
+  font-weight: bold;
+}

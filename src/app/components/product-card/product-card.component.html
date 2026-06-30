@@ -1,0 +1,16 @@
+<div class="product-card">
+  <img [src]="product.image" [alt]="product.name">
+
+  <div class="product-content">
+    <h3>{{ product.name }}</h3>
+
+    <div class="product-footer">
+      <span class="price">₦{{ product.price }}</span>
+      <span class="stock">{{ product.stock }} in stock</span>
+    </div>
+
+    <button (click)="addToCart()">
+      Add to Cart
+    </button>
+  </div>
+</div>

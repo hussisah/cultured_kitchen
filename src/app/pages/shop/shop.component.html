@@ -1,0 +1,65 @@
+<div class="shop-page">
+
+  <!-- HERO -->
+  <section class="shop-hero">
+    <div class="hero-overlay">
+      <h1>Welcome to Cultured Kitchen</h1>
+      <p>
+        Discover premium cookware, dining sets, and unique souvenirs
+      </p>
+    </div>
+  </section>
+
+  <div class="shop-container">
+
+    <!-- SEARCH -->
+    <div class="search-section">
+      <input
+        type="text"
+        placeholder="Search products..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+
+    <!-- CATEGORY FILTER -->
+    <div class="category-filter">
+      <button
+        *ngFor="let category of categories"
+        (click)="selectedCategory = category"
+        [class.active]="selectedCategory === category"
+      >
+        {{ category }}
+      </button>
+    </div>
+
+    <!-- PRODUCT COUNT -->
+    <div class="product-summary">
+      <span>{{ filteredProducts().length }}</span>
+      Products Available
+    </div>
+
+    <!-- FEATURED BANNER -->
+    <div class="promo-banner">
+      <h3>🔥 New Arrivals Available</h3>
+      <p>Get premium household items at affordable prices</p>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="products-grid">
+      <app-product-card
+        *ngFor="let product of filteredProducts()"
+        [product]="product">
+      </app-product-card>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div
+      class="empty-state"
+      *ngIf="filteredProducts().length === 0"
+    >
+      <h3>No products found</h3>
+      <p>Try another keyword or category.</p>
+    </div>
+
+  </div>
+</div>

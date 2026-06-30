@@ -1,0 +1,49 @@
+nav {
+  background: #8B4513;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.cart-btn {
+  background: white;
+  color: #8B4513;
+  padding: 6px 15px;
+  border-radius: 20px;
+}
+
+.admin-btn {
+  background: rgba(255,255,255,0.2);
+  padding: 6px 15px;
+  border-radius: 8px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}

@@ -1,0 +1,61 @@
+<section class="hero">
+ <div class="hero-logo">
+  <img src="assets/images/logo.jpeg" alt="Cultured Kitchen Logo">
+</div>
+  <h1>Cultured Kitchen</h1>
+  <p>Household Wares & Souvenirs — Quality You Can Feel</p>
+
+  <button routerLink="/shop">Shop Now →</button>
+</section>
+
+<section class="featured-products">
+  <h2>Featured Products</h2>
+
+  <div class="product-grid">
+    <div class="product-card" *ngFor="let product of featuredProducts">
+      <img [src]="product.image" [alt]="product.name">
+
+      <h3>{{ product.name }}</h3>
+
+      <p class="price">₦{{ product.price }}</p>
+
+      <p class="stock">{{ product.stock }} in stock</p>
+
+      
+    </div>
+  </div>
+
+  <div class="view-all">
+    <a routerLink="/shop">View All Products →</a>
+  </div>
+</section>
+
+<section class="features">
+  <h2>Why Shop With Us?</h2>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span>🏆</span>
+      <h3>Quality Products</h3>
+      <p>Carefully selected household wares</p>
+    </div>
+
+    <div class="feature-card">
+      <span>🚚</span>
+      <h3>Fast Delivery</h3>
+      <p>Quick delivery across Nigeria</p>
+    </div>
+
+    <div class="feature-card">
+      <span>💳</span>
+      <h3>Easy Payment</h3>
+      <p>Simple bank transfer payment</p>
+    </div>
+
+    <div class="feature-card">
+      <span>🎁</span>
+      <h3>Unique Souvenirs</h3>
+      <p>Authentic Nigerian souvenirs</p>
+    </div>
+  </div>
+</section>

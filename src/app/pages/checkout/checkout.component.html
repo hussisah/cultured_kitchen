@@ -1,0 +1,124 @@
+<div class="checkout-container">
+  <h2>Complete Your Order</h2>
+
+  <div class="checkout-card">
+    <div class="order-summary">
+      <h3>Order Summary</h3>
+      <p>Total Amount</p>
+      <h1>₦{{ storeService.getTotal() }}</h1>
+    </div>
+
+    <div class="payment-box">
+      <h3>Bank Transfer Details</h3>
+
+      <div class="bank-detail">
+        <span>Bank Name</span>
+        <strong>MoniePoint MFB</strong>
+      </div>
+
+      <div class="bank-detail">
+        <span>Account Name</span>
+        <strong>Cultured Kitchen</strong>
+      </div>
+
+      <div class="bank-detail">
+        <span>Account Number</span>
+        <strong>8281869115</strong>
+      </div>
+    </div>
+
+    <form class="checkout-form" (ngSubmit)="checkout()">
+
+      <div class="input-group">
+        <label>Full Name</label>
+        <input
+          type="text"
+          [(ngModel)]="customer.name"
+          name="name"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label>Email Address</label>
+        <input
+          type="email"
+          [(ngModel)]="customer.email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input
+          type="text"
+          [(ngModel)]="customer.phone"
+          name="phone"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label>WhatsApp Number</label>
+        <input
+          type="text"
+          [(ngModel)]="customer.whatsapp"
+          name="whatsapp"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label>Upload Payment Proof</label>
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          required
+        />
+      </div>
+
+      <div *ngIf="paymentPreview" class="preview-box">
+        <img [src]="paymentPreview" alt="Payment Proof Preview">
+      </div>
+
+      <div class="input-group">
+        <label>Delivery Method</label>
+        <select
+          [(ngModel)]="customer.deliveryType"
+          name="deliveryType"
+          required
+        >
+          <option value="">Select Option</option>
+          <option value="Store Pickup">Store Pickup</option>
+          <option value="Delivery">Delivery</option>
+        </select>
+      </div>
+
+      <div
+        class="pickup-box"
+        *ngIf="customer.deliveryType === 'Store Pickup'"
+      >
+        <h4>Pickup Address</h4>
+        <p>69 Road Gwarinpa II, Abuja, FCT</p>
+      </div>
+
+      <div
+        class="input-group"
+        *ngIf="customer.deliveryType === 'Delivery'"
+      >
+        <label>Delivery Address</label>
+        <textarea
+          [(ngModel)]="customer.address"
+          name="address"
+        ></textarea>
+      </div>
+
+      <button type="submit" class="checkout-btn">
+        Confirm Checkout
+      </button>
+
+    </form>
+  </div>
+</div>

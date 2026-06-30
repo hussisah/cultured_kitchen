@@ -1,0 +1,150 @@
+.shop-page {
+  background: #fafafa;
+  min-height: 100vh;
+}
+
+/* HERO */
+.shop-hero {
+  height: 350px;
+  background:
+    linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),
+    url('/assets/images/shop-banner.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  text-align: center;
+  color: white;
+  padding: 20px;
+}
+
+.hero-overlay h1 {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.hero-overlay p {
+  font-size: 18px;
+}
+
+/* MAIN CONTAINER */
+.shop-container {
+  padding: 40px 20px;
+  max-width: 1300px;
+  margin: auto;
+}
+
+/* SEARCH */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.search-section input {
+  width: 100%;
+  max-width: 500px;
+  padding: 15px;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.1);
+  font-size: 16px;
+  outline: none;
+}
+
+/* CATEGORY */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.category-filter button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 30px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+.category-filter button:hover {
+  transform: translateY(-2px);
+}
+
+.category-filter button.active {
+  background: #8B4513;
+  color: white;
+}
+
+/* PRODUCT COUNT */
+.product-summary {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-summary span {
+  background: #8B4513;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* PROMO */
+.promo-banner {
+  background: linear-gradient(to right, #8B4513, #a0522d);
+  color: white;
+  padding: 25px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.promo-banner h3 {
+  margin-bottom: 10px;
+}
+
+/* PRODUCT GRID */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+/* EMPTY */
+.empty-state {
+  margin-top: 60px;
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .hero-overlay h1 {
+    font-size: 35px;
+  }
+
+  .hero-overlay p {
+    font-size: 15px;
+  }
+
+  .shop-hero {
+    height: 250px;
+  }
+}
