@@ -1,61 +1,303 @@
+<!-- HERO -->
 <section class="hero">
- <div class="hero-logo">
-  <img src="assets/images/logo.jpeg" alt="Cultured Kitchen Logo">
-</div>
-  <h1>Cultured Kitchen</h1>
-  <p>Household Wares & Souvenirs — Quality You Can Feel</p>
 
-  <button routerLink="/shop">Shop Now →</button>
+  <div class="hero-content">
+
+    <div class="hero-logo">
+      <img
+        src="assets/images/logo.jpeg"
+        alt="Cultured Kitchen Logo"
+      />
+    </div>
+
+    <span class="hero-tagline">
+      HOUSEHOLD WARES • SOUVENIRS • LIFESTYLE
+    </span>
+
+    <h1>
+      Elevate Your
+      <span>Everyday Living</span>
+    </h1>
+
+    <p>
+      Discover carefully selected household wares, beautiful
+      dining pieces and unique souvenirs made to add something
+      special to your home.
+    </p>
+
+    <div class="hero-buttons">
+
+      <a
+        routerLink="/shop"
+        class="primary-button"
+      >
+        Shop Now
+        <span>→</span>
+      </a>
+
+      <a
+        routerLink="/shop"
+        class="secondary-button"
+      >
+        Explore Collection
+      </a>
+
+    </div>
+
+  </div>
+
 </section>
 
+
+<!-- INTRODUCTION -->
+<section class="intro-section">
+
+  <div class="intro-content">
+
+    <span class="section-label">
+      WELCOME TO CULTURED KITCHEN
+    </span>
+
+    <h2>
+      Beautiful things for
+      <span>beautiful spaces.</span>
+    </h2>
+
+    <p>
+      From everyday kitchen essentials to elegant dining pieces
+      and unique souvenirs, Cultured Kitchen brings together
+      products that combine style, quality and practicality.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- FEATURED PRODUCTS -->
 <section class="featured-products">
-  <h2>Featured Products</h2>
+
+  <div class="section-heading">
+
+    <div>
+      <span class="section-label">
+        OUR COLLECTION
+      </span>
+
+      <h2>Featured Products</h2>
+    </div>
+
+    <a
+      routerLink="/shop"
+      class="view-all-link"
+    >
+      View All Products →
+    </a>
+
+  </div>
+
 
   <div class="product-grid">
-    <div class="product-card" *ngFor="let product of featuredProducts">
-      <img [src]="product.image" [alt]="product.name">
 
-      <h3>{{ product.name }}</h3>
+    <div
+      class="product-card"
+      *ngFor="let product of featuredProducts"
+    >
 
-      <p class="price">₦{{ product.price }}</p>
+      <div class="product-image">
 
-      <p class="stock">{{ product.stock }} in stock</p>
+        <img
+          [src]="product.image"
+          [alt]="product.name"
+        />
 
-      
+        <span class="category-badge">
+          {{ product.category }}
+        </span>
+
+      </div>
+
+
+      <div class="product-info">
+
+        <h3>
+          {{ product.name }}
+        </h3>
+
+        <div class="product-bottom">
+
+          <div>
+
+            <p class="price">
+              ₦{{ product.price | number:'1.0-0' }}
+            </p>
+
+            <p
+              class="stock"
+              [class.out-of-stock]="product.stock === 0"
+            >
+              {{
+                product.stock > 0
+                  ? product.stock + ' in stock'
+                  : 'Out of stock'
+              }}
+            </p>
+
+          </div>
+
+          <a
+            routerLink="/shop"
+            class="product-arrow"
+            aria-label="View product"
+          >
+            →
+          </a>
+
+        </div>
+
+      </div>
+
     </div>
+
   </div>
 
-  <div class="view-all">
-    <a routerLink="/shop">View All Products →</a>
+
+  <div class="mobile-view-all">
+
+    <a
+      routerLink="/shop"
+      class="primary-button"
+    >
+      View All Products →
+    </a>
+
   </div>
+
 </section>
 
+
+<!-- WHY SHOP WITH US -->
 <section class="features">
-  <h2>Why Shop With Us?</h2>
+
+  <div class="features-heading">
+
+    <span class="section-label">
+      THE CULTURED KITCHEN DIFFERENCE
+    </span>
+
+    <h2>
+      Why Shop With Us?
+    </h2>
+
+    <p>
+      We make it easy to find quality products for your home,
+      delivered with care.
+    </p>
+
+  </div>
+
 
   <div class="feature-grid">
-    <div class="feature-card">
-      <span>🏆</span>
-      <h3>Quality Products</h3>
-      <p>Carefully selected household wares</p>
-    </div>
 
     <div class="feature-card">
-      <span>🚚</span>
-      <h3>Fast Delivery</h3>
-      <p>Quick delivery across Nigeria</p>
+
+      <div class="feature-icon">
+        ✦
+      </div>
+
+      <h3>
+        Quality Products
+      </h3>
+
+      <p>
+        Carefully selected household wares made for everyday
+        living.
+      </p>
+
     </div>
 
-    <div class="feature-card">
-      <span>💳</span>
-      <h3>Easy Payment</h3>
-      <p>Simple bank transfer payment</p>
-    </div>
 
     <div class="feature-card">
-      <span>🎁</span>
-      <h3>Unique Souvenirs</h3>
-      <p>Authentic Nigerian souvenirs</p>
+
+      <div class="feature-icon">
+        ◈
+      </div>
+
+      <h3>
+        Fast Delivery
+      </h3>
+
+      <p>
+        Quick and convenient delivery across Nigeria.
+      </p>
+
     </div>
+
+
+    <div class="feature-card">
+
+      <div class="feature-icon">
+        ₦
+      </div>
+
+      <h3>
+        Easy Payment
+      </h3>
+
+      <p>
+        Simple and convenient payment options for your orders.
+      </p>
+
+    </div>
+
+
+    <div class="feature-card">
+
+      <div class="feature-icon">
+        ♢
+      </div>
+
+      <h3>
+        Unique Souvenirs
+      </h3>
+
+      <p>
+        Discover beautiful and memorable pieces with a
+        distinctly Nigerian touch.
+      </p>
+
+    </div>
+
   </div>
+
+</section>
+
+
+<!-- FINAL CTA -->
+<section class="home-cta">
+
+  <div class="cta-content">
+
+    <span class="section-label">
+      YOUR HOME DESERVES BETTER
+    </span>
+
+    <h2>
+      Find something you'll
+      <span>love.</span>
+    </h2>
+
+    <p>
+      Explore our collection of household wares and souvenirs.
+    </p>
+
+    <a
+      routerLink="/shop"
+      class="cta-button"
+    >
+      Shop The Collection →
+    </a>
+
+  </div>
+
 </section>

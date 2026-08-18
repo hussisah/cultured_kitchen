@@ -1,22 +1,85 @@
 <div class="product-card">
-  <img [src]="product.image" [alt]="product.name">
 
+  <!-- PRODUCT IMAGE -->
+  <div class="product-image">
+
+    <img
+      [src]="product.image"
+      [alt]="product.name"
+    >
+
+    <!-- STOCK BADGE -->
+    <span
+      class="stock-badge"
+      [class.out-of-stock]="availableStock <= 0"
+    >
+      {{
+        availableStock > 0
+          ? availableStock + ' available'
+          : 'Out of stock'
+      }}
+    </span>
+
+    <!-- CATEGORY -->
+    <span class="category-badge">
+      {{ product.category }}
+    </span>
+
+  </div>
+
+
+  <!-- PRODUCT CONTENT -->
   <div class="product-content">
-    <h3>{{ product.name }}</h3>
+
+    <h3>
+      {{ product.name }}
+    </h3>
+
+    <p
+      class="description"
+      *ngIf="product.description"
+    >
+      {{ product.description }}
+    </p>
+
 
     <div class="product-footer">
-      <span class="price">₦{{ product.price }}</span>
 
-      <span class="stock">
-        {{ availableStock }} in stock
-      </span>
+      <div class="price-section">
+
+        <span class="price">
+          ₦{{ product.price | number:'1.0-0' }}
+        </span>
+
+      </div>
+
+
+      <button
+        class="cart-button"
+        type="button"
+        (click)="addToCart()"
+        [disabled]="availableStock <= 0"
+      >
+
+        <span *ngIf="availableStock > 0">
+          Add to Cart
+        </span>
+
+        <span *ngIf="availableStock <= 0">
+          Out of Stock
+        </span>
+
+        <span
+          class="arrow"
+          *ngIf="availableStock > 0"
+        >
+          →
+        </span>
+
+      </button>
+
     </div>
 
-    <button
-      (click)="addToCart()"
-      [disabled]="availableStock <= 0"
-    >
-      {{ availableStock > 0 ? 'Add to Cart' : 'Out of Stock' }}
-    </button>
   </div>
+
 </div>

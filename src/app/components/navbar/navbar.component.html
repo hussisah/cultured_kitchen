@@ -1,15 +1,56 @@
-<nav>
+<nav class="navbar">
 
-<div class="logo">
-  <img src="assets/images/logo.jpeg" alt="Cultured Kitchen Logo">
-  <span>Cultured Kitchen</span>
-</div>
- <div class="nav-links">
-  
-  <a routerLink="/">Home</a>
-  <a routerLink="/shop">Shop</a>
-  <a routerLink="/cart" class="cart-btn">🛒 Cart</a>
-   <a routerLink="/admin-login" class="admin-btn">Admin</a>
+  <!-- LOGO -->
+  <a routerLink="/" class="logo">
+
+    <img
+      src="assets/images/logo.jpeg"
+      alt="Cultured Kitchen Logo"
+    />
+
+    <div class="logo-text">
+      <span class="brand-name">Cultured Kitchen</span>
+      <span class="brand-tagline">
+        Household Wares & Souvenirs
+      </span>
+    </div>
+
+  </a>
+
+
+  <!-- NAVIGATION -->
+  <div class="nav-links">
+
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      Home
+    </a>
+
+    <a
+      routerLink="/shop"
+      routerLinkActive="active"
+    >
+      Shop
+    </a>
+
+    <a
+      routerLink="/cart"
+      routerLinkActive="active"
+      class="cart-btn"
+    >
+      🛒 Cart
+    </a>
+
+    <a
+      routerLink="/admin-login"
+      class="admin-btn"
+    >
+      Admin
+    </a>
 
   </div>
+
 </nav>
