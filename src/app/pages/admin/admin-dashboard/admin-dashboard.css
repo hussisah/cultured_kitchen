@@ -19,6 +19,26 @@
   color: #222;
 }
 
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.audit-btn {
+  background: #4a90e2;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.audit-btn:hover {
+  background: #3a7bc8;
+}
+
 .logout-btn {
   background: #111;
   color: white;
@@ -156,6 +176,191 @@ button:hover {
   margin-right: 10px;
 }
 
+.image-label {
+  display: block;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+.image-preview {
+  margin-top: 15px;
+}
+
+.image-preview p {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.image-preview img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.category-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.category-form input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.category-form button {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-item {
+  background: #f1f1f1;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+/* ==========================================
+   INVENTORY TABLE — copied exactly from audit-tab.css
+   so this table renders identically to the audit page
+========================================== */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+th,
+td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f8f8f8;
+  font-weight: 600;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.product-info img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-info strong {
+  display: block;
+}
+
+.product-info small {
+  display: block;
+  margin-top: 4px;
+  color: #777;
+}
+
+.stock {
+  font-weight: 700;
+}
+
+.low-stock {
+  color: #d97706;
+}
+
+.out-of-stock {
+  color: #dc2626;
+}
+
+.stock-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.stock-controls input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 0;
+}
+
+.stock-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.stock-buttons button {
+  flex: 1;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0;
+}
+
+.add-button {
+  background: #16a34a;
+  color: white;
+}
+
+.reduce-button {
+  background: #dc2626;
+  color: white;
+}
+
+.stock-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading {
+  padding: 30px;
+  text-align: center;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.no-products {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+}
+
 /* Analytics */
 .analytics-card {
   background: #fafafa;
@@ -186,45 +391,45 @@ button:hover {
   }
 
   .order-card {
-  background: white;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
 
-.order-card p {
-  margin: 8px 0;
-}
+  .order-card p {
+    margin: 8px 0;
+  }
 
-.proof-image {
-  width: 180px;
-  height: auto;
-  margin-top: 15px;
-  border-radius: 10px;
-}
+  .proof-image {
+    width: 180px;
+    height: auto;
+    margin-top: 15px;
+    border-radius: 10px;
+  }
 
-.order-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 12px;
-}
+  .order-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+  }
 
-.approve-btn,
-.decline-btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
+  .approve-btn,
+  .decline-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 
-.approve-btn {
-  background: green;
-  color: white;
-}
+  .approve-btn {
+    background: green;
+    color: white;
+  }
 
-.decline-btn {
-  background: red;
-  color: white;
-}
+  .decline-btn {
+    background: red;
+    color: white;
+  }
 }

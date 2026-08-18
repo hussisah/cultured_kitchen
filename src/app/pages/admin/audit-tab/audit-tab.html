@@ -1,1 +1,571 @@
-<p>audit-tab works!</p>
+<div class="audit-page">
+
+  <!-- HEADER -->
+  <div class="audit-header">
+
+    <div>
+      <h1>Sales & Inventory Audit</h1>
+      <p>
+        Monitor sales performance and manage real-time inventory.
+      </p>
+    </div>
+
+    <button
+      class="refresh-button"
+      type="button"
+      (click)="refreshAudit()"
+      [disabled]="loadingProducts || loadingOrders"
+    >
+      Refresh
+    </button>
+
+  </div>
+
+
+  <!-- LOW STOCK ALERT -->
+
+  <div
+    class="low-stock-alert"
+    *ngIf="!loadingProducts && getLowStockProducts().length > 0"
+  >
+
+    <div class="alert-title">
+      ⚠️ Low Stock Alert
+    </div>
+
+    <div class="low-stock-list">
+
+      <div
+        class="low-stock-item"
+        *ngFor="let product of getLowStockProducts()"
+      >
+        <strong>{{ product.name }}</strong>
+        —
+        {{ product.stock }} left
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SALES LOADING -->
+
+  <div
+    class="loading"
+    *ngIf="loadingOrders"
+  >
+    Loading sales analytics...
+  </div>
+
+
+  <!-- SALES ERROR -->
+
+  <div
+    class="error-message"
+    *ngIf="orderError"
+  >
+    {{ orderError }}
+  </div>
+
+
+  <!-- SUMMARY -->
+
+  <div
+    class="summary-grid"
+    *ngIf="!loadingOrders && !orderError"
+  >
+
+    <div class="summary-card">
+
+      <span class="summary-label">
+        Total Revenue
+      </span>
+
+      <strong class="summary-value">
+        ₦{{ totalRevenue | number:'1.0-0' }}
+      </strong>
+
+      <small>
+        Approved orders
+      </small>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <span class="summary-label">
+        Total Orders
+      </span>
+
+      <strong class="summary-value">
+        {{ totalOrders }}
+      </strong>
+
+      <small>
+        Approved orders
+      </small>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <span class="summary-label">
+        Average Order Value
+      </span>
+
+      <strong class="summary-value">
+        ₦{{ averageOrderValue | number:'1.0-0' }}
+      </strong>
+
+      <small>
+        Per approved order
+      </small>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <span class="summary-label">
+        Inventory Worth
+      </span>
+
+      <strong class="summary-value">
+        ₦{{
+          products.reduce(
+            (total, product) =>
+              total + getProductWorth(product),
+            0
+          ) | number:'1.0-0'
+        }}
+      </strong>
+
+      <small>
+        Current stock value
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <!-- ANALYTICS -->
+
+  <div
+    class="analytics-grid"
+    *ngIf="!loadingOrders && !orderError"
+  >
+
+
+    <!-- REVENUE -->
+
+    <div class="analytics-card">
+
+      <div class="section-header">
+
+        <h2>Revenue Over Time</h2>
+
+        <p>
+          Revenue from approved orders
+        </p>
+
+      </div>
+
+
+      <div
+        class="revenue-chart"
+        *ngIf="revenueByDay.length > 0"
+      >
+
+        <div
+          class="chart-column"
+          *ngFor="let item of revenueByDay"
+        >
+
+          <div class="chart-value">
+            ₦{{ item.revenue | number:'1.0-0' }}
+          </div>
+
+          <div class="bar-container">
+
+            <div
+              class="revenue-bar"
+              [style.height.%]="
+                getRevenueBarHeight(item.revenue)
+              "
+            ></div>
+
+          </div>
+
+          <div class="chart-label">
+            {{ item.label }}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="empty-state"
+        *ngIf="revenueByDay.length === 0"
+      >
+        No approved sales yet.
+      </div>
+
+    </div>
+
+
+    <!-- BEST SELLERS -->
+
+    <div class="analytics-card">
+
+      <div class="section-header">
+
+        <h2>Top 5 Best Sellers</h2>
+
+        <p>
+          Current month
+        </p>
+
+      </div>
+
+
+      <div
+        *ngIf="bestSellers.length > 0"
+      >
+
+        <div
+          class="best-seller"
+          *ngFor="
+            let seller of bestSellers;
+            let i = index
+          "
+        >
+
+          <div class="seller-rank">
+            {{ i + 1 }}
+          </div>
+
+          <div class="seller-info">
+
+            <strong>
+              {{ seller.name }}
+            </strong>
+
+            <small>
+              {{ seller.quantity }} sold
+            </small>
+
+          </div>
+
+          <strong class="seller-revenue">
+            ₦{{ seller.revenue | number:'1.0-0' }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="empty-state"
+        *ngIf="bestSellers.length === 0"
+      >
+        No sales this month yet.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- INVENTORY -->
+
+  <div class="inventory-section">
+
+    <div class="inventory-card">
+
+      <div class="section-header">
+
+        <h2>Inventory</h2>
+
+        <p>
+          PostgreSQL inventory with real-time stock management.
+        </p>
+
+      </div>
+
+
+      <!-- INVENTORY LOADING -->
+
+      <div
+        class="loading"
+        *ngIf="loadingProducts"
+      >
+        Loading inventory...
+      </div>
+
+
+      <!-- INVENTORY ERROR -->
+
+      <div
+        class="error-message"
+        *ngIf="productError"
+      >
+        {{ productError }}
+      </div>
+
+
+      <!-- INVENTORY TABLE -->
+
+      <div
+        class="table-wrapper"
+        *ngIf="
+          !loadingProducts &&
+          !productError
+        "
+      >
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>ID</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Unit Price</th>
+              <th>Stock</th>
+              <th>Inventory Worth</th>
+              <th>Stock Management</th>
+              <th>Actions</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            <tr
+              *ngFor="let product of products"
+            >
+
+              <!-- ID -->
+
+              <td>
+                {{ product.id }}
+              </td>
+
+
+              <!-- PRODUCT -->
+
+              <td>
+
+                <div class="product-info">
+
+                  <img
+                    *ngIf="product.image"
+                    [src]="product.image"
+                    [alt]="product.name"
+                  />
+
+                  <div>
+
+                    <strong>
+                      {{ product.name }}
+                    </strong>
+
+                    <small>
+                      {{ product.description }}
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- CATEGORY -->
+
+              <td>
+                {{ product.category }}
+              </td>
+
+
+              <!-- PRICE -->
+
+              <td>
+                ₦{{ product.price | number:'1.0-0' }}
+              </td>
+
+
+              <!-- STOCK -->
+
+              <td>
+
+                <span
+                  class="stock"
+                  [class.low-stock]="
+                    product.stock <= lowStockThreshold
+                  "
+                  [class.out-of-stock]="
+                    product.stock === 0
+                  "
+                >
+                  {{ product.stock }}
+                </span>
+
+              </td>
+
+
+              <!-- WORTH -->
+
+              <td>
+
+                <strong>
+                  ₦{{
+                    getProductWorth(product)
+                    | number:'1.0-0'
+                  }}
+                </strong>
+
+              </td>
+
+
+              <!-- STOCK MANAGEMENT -->
+
+              <td>
+
+                <div class="stock-controls">
+
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="Amount"
+                    [(ngModel)]="
+                      stockAmounts[product.id]
+                    "
+                    [disabled]="
+                      updatingProductId === product.id
+                    "
+                  />
+
+
+                  <div class="stock-buttons">
+
+                    <button
+                      class="add-button"
+                      type="button"
+                      (click)="addStock(product)"
+                      [disabled]="
+                        updatingProductId === product.id
+                      "
+                    >
+
+                      <span
+                        *ngIf="
+                          updatingProductId !== product.id
+                        "
+                      >
+                        + Add
+                      </span>
+
+                      <span
+                        *ngIf="
+                          updatingProductId === product.id
+                        "
+                      >
+                        Updating...
+                      </span>
+
+                    </button>
+
+
+                    <button
+                      class="reduce-button"
+                      type="button"
+                      (click)="reduceStock(product)"
+                      [disabled]="
+                        updatingProductId === product.id ||
+                        product.stock === 0
+                      "
+                    >
+                      − Reduce
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+              <!-- ACTIONS -->
+
+<td>
+
+  <button
+    class="delete-button"
+    type="button"
+    (click)="deleteProduct(product)"
+    [disabled]="
+      updatingProductId === product.id
+    "
+  >
+
+    <span
+      *ngIf="
+        updatingProductId !== product.id
+      "
+    >
+      Delete
+    </span>
+
+    <span
+      *ngIf="
+        updatingProductId === product.id
+      "
+    >
+      Deleting...
+    </span>
+
+  </button>
+
+</td>
+
+            </tr>
+
+
+            <!-- NO PRODUCTS -->
+
+            <tr
+              *ngIf="products.length === 0"
+            >
+
+              <td
+                colspan="8"
+                class="no-products"
+              >
+                No products found.
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

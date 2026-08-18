@@ -6,11 +6,17 @@
 
     <div class="product-footer">
       <span class="price">₦{{ product.price }}</span>
-      <span class="stock">{{ product.stock }} in stock</span>
+
+      <span class="stock">
+        {{ availableStock }} in stock
+      </span>
     </div>
 
-    <button (click)="addToCart()">
-      Add to Cart
+    <button
+      (click)="addToCart()"
+      [disabled]="availableStock <= 0"
+    >
+      {{ availableStock > 0 ? 'Add to Cart' : 'Out of Stock' }}
     </button>
   </div>
 </div>

@@ -16,33 +16,36 @@ export class AdminLogin {
 
   constructor(private router: Router) {}
 
-  login() {
-    if (
-      this.username === 'ceo' &&
-      this.password === 'ceo123'
-    ) {
-      localStorage.setItem('adminRole', 'CEO');
-      localStorage.setItem('adminUser', 'ceo');
-      this.router.navigate(['/admin-dashboard']);
-      return;
-    }
+ login() {
+  console.log('LOGIN CLICKED - username:', JSON.stringify(this.username), 'password:', JSON.stringify(this.password));
 
-    const salesPeople = JSON.parse(
-      localStorage.getItem('salesPeople') || '[]'
-    );
+  if (this.username === 'ceo' && this.password === 'ceo123') {
+    console.log('CEO MATCH - opening tab');
+    localStorage.setItem('adminRole', 'CEO');
+    localStorage.setItem('adminUser', 'ceo');
+    window.open('/admin-dashboard', '_blank');
+    return;
+  }
 
-    const salesUser = salesPeople.find(
-      (user: any) =>
-        user.username === this.username &&
-        user.password === this.password
-    );
+  console.log('NOT CEO - checking sales people');
+  const salesPeople = JSON.parse(localStorage.getItem('salesPeople') || '[]');
+  const salesUser = salesPeople.find(
+    (user: any) => user.username === this.username && user.password === this.password
+  );
 
-    if (salesUser) {
-      localStorage.setItem('adminRole', 'SALES');
-      localStorage.setItem('adminUser', salesUser.username);
-      this.router.navigate(['/admin-dashboard']);
-    } else {
-      alert('Invalid login details');
-    }
+  if (salesUser) {
+    console.log('SALES MATCH - opening tab');
+    localStorage.setItem('adminRole', 'SALES');
+    localStorage.setItem('adminUser', salesUser.username);
+    window.open('/admin-dashboard', '_blank');
+  } else {
+    console.log('NO MATCH AT ALL');
+    alert('Invalid login details');
+  }
+}
+   private openDashboardInNewTab() {
+    // Opens dashboard in a new tab; window.open works here since
+    // it's called synchronously inside the click handler (user gesture)
+    window.open('/admin-dashboard', '_blank');
   }
 }

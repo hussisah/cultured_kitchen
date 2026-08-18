@@ -2,20 +2,17 @@ import { CanActivateFn } from '@angular/router';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-export const adminGuard: CanActivateFn = () => {
+export const ceoGuard: CanActivateFn = () => {
+
   const platformId = inject(PLATFORM_ID);
 
-  // On the server there's no localStorage — let SSR render the shell,
-  // the guard re-checks properly once the app hydrates in the browser.
+  // Allow SSR to render the page shell.
+  // The browser will perform the actual role check.
   if (!isPlatformBrowser(platformId)) {
     return true;
   }
 
   const role = localStorage.getItem('adminRole');
 
-  if (role === 'CEO' || role === 'SALES') {
-    return true;
-  }
-
-  return false;
+  return role?.trim() === 'CEO';
 };

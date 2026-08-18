@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
+
   private apiUrl = 'http://localhost:3000/orders';
 
   constructor(private http: HttpClient) {}
@@ -15,8 +17,8 @@ export class OrderService {
   }
 
   // Get all orders
-  getOrders() {
-    return this.http.get(this.apiUrl);
+  getOrders(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 
   // Approve order
@@ -34,8 +36,9 @@ export class OrderService {
       {}
     );
   }
-  //delete order
-   deleteOrder(id: number) {
+
+  // Delete order
+  deleteOrder(id: number) {
     return this.http.delete(
       `${this.apiUrl}/${id}`
     );

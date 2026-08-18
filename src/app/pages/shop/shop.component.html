@@ -4,62 +4,138 @@
   <section class="shop-hero">
     <div class="hero-overlay">
       <h1>Welcome to Cultured Kitchen</h1>
+
       <p>
         Discover premium cookware, dining sets, and unique souvenirs
       </p>
     </div>
   </section>
 
+
   <div class="shop-container">
 
     <!-- SEARCH -->
     <div class="search-section">
+
       <input
         type="text"
         placeholder="Search products..."
         [(ngModel)]="searchTerm"
       />
+
     </div>
 
-    <!-- CATEGORY FILTER -->
-    <div class="category-filter">
-      <button
-        *ngFor="let category of categories"
-        (click)="selectedCategory = category"
-        [class.active]="selectedCategory === category"
+
+    <!-- CATEGORY DROPDOWN -->
+    <div class="category-section">
+
+      <label for="category">
+        Shop by Category
+      </label>
+
+      <select
+        id="category"
+        [(ngModel)]="selectedCategory"
       >
-        {{ category }}
+
+        <option
+          *ngFor="let category of categories"
+          [value]="category"
+        >
+          {{ category }}
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- LOADING -->
+    <div
+      class="loading-state"
+      *ngIf="loading"
+    >
+      <p>Loading products...</p>
+    </div>
+
+
+    <!-- ERROR -->
+    <div
+      class="error-state"
+      *ngIf="!loading && errorMessage"
+    >
+      <p>{{ errorMessage }}</p>
+
+      <button
+        type="button"
+        (click)="loadProducts()"
+      >
+        Try Again
       </button>
     </div>
 
-    <!-- PRODUCT COUNT -->
-    <div class="product-summary">
-      <span>{{ filteredProducts().length }}</span>
-      Products Available
-    </div>
 
-    <!-- FEATURED BANNER -->
-    <div class="promo-banner">
-      <h3>🔥 New Arrivals Available</h3>
-      <p>Get premium household items at affordable prices</p>
-    </div>
+    <!-- PRODUCT CONTENT -->
+    <div *ngIf="!loading && !errorMessage">
 
-    <!-- PRODUCTS -->
-    <div class="products-grid">
-      <app-product-card
-        *ngFor="let product of filteredProducts()"
-        [product]="product">
-      </app-product-card>
-    </div>
+      <!-- PRODUCT COUNT -->
+      <div class="product-summary">
 
-    <!-- EMPTY STATE -->
-    <div
-      class="empty-state"
-      *ngIf="filteredProducts().length === 0"
-    >
-      <h3>No products found</h3>
-      <p>Try another keyword or category.</p>
+        <span>
+          {{ filteredProducts().length }}
+        </span>
+
+        Products Available
+
+      </div>
+
+
+      <!-- FEATURED BANNER -->
+      <div class="promo-banner">
+
+        <h3>
+          🔥 New Arrivals Available
+        </h3>
+
+        <p>
+          Get premium household items at affordable prices
+        </p>
+
+      </div>
+
+
+      <!-- PRODUCTS -->
+      <div
+        class="products-grid"
+        *ngIf="filteredProducts().length > 0"
+      >
+
+        <app-product-card
+          *ngFor="let product of filteredProducts()"
+          [product]="product">
+        </app-product-card>
+
+      </div>
+
+
+      <!-- EMPTY STATE -->
+      <div
+        class="empty-state"
+        *ngIf="filteredProducts().length === 0"
+      >
+
+        <h3>
+          No products found
+        </h3>
+
+        <p>
+          Try another keyword or category.
+        </p>
+
+      </div>
+
     </div>
 
   </div>
+
 </div>
