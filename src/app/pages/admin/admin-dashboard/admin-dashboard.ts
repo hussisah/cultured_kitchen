@@ -652,27 +652,16 @@ export class AdminDashboard implements OnInit {
   }
 
 
-  // =========================
-  // DELETE ORDER
-  // =========================
+// =========================
+// DELETE ORDER
+// =========================
 
 deleteOrder(order: any) {
 
-  // Only approved orders should be deleted
-  if (
-    String(order.status).toLowerCase() !== 'approved'
-  ) {
-
-    alert(
-      'Only approved orders can be deleted.'
-    );
-
-    return;
-  }
-
   const confirmed = confirm(
-    `Delete ${order.customer_name}'s approved order from the dashboard?\n\n` +
-    `The sale will remain permanently recorded in the Sales Audit.`
+    `Delete ${order.customer_name}'s order?\n\n` +
+    `Status: ${order.status}\n\n` +
+    `This will remove the order from the customer order list.`
   );
 
   if (!confirmed) {
@@ -685,7 +674,7 @@ deleteOrder(order: any) {
 
       next: () => {
 
-        // Remove it from the visible dashboard
+        // Remove immediately from dashboard
         this.orders = this.orders.filter(
           item => item.id !== order.id
         );
@@ -693,7 +682,7 @@ deleteOrder(order: any) {
         this.cdr.detectChanges();
 
         alert(
-          'Order removed from the dashboard. The sale remains in the audit.'
+          'Order deleted successfully.'
         );
 
       },
