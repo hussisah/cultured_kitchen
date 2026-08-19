@@ -1,6 +1,6 @@
 .audit-page {
   padding: 30px;
-  background: #f7f7f7;
+  background: #f8f3ed;
   min-height: 100vh;
 }
 
@@ -14,18 +14,19 @@
 .audit-header h1 {
   margin: 0;
   font-size: 28px;
+  color: #5c3218;
 }
 
 .audit-header p {
   margin-top: 6px;
-  color: #666;
+  color: #806a58;
 }
 
 .inventory-card {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(92, 50, 24, 0.08);
 }
 
 .table-wrapper {
@@ -43,12 +44,13 @@ th,
 td {
   padding: 14px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eadfd4;
 }
 
 th {
-  background: #f8f8f8;
+  background: #f3e8dc;
   font-weight: 600;
+  color: #5c3218;
 }
 
 .product-info {
@@ -66,24 +68,26 @@ th {
 
 .product-info strong {
   display: block;
+  color: #4b2a16;
 }
 
 .product-info small {
   display: block;
   margin-top: 4px;
-  color: #777;
+  color: #806a58;
 }
 
 .stock {
   font-weight: 700;
+  color: #5c3218;
 }
 
 .low-stock {
-  color: #d97706;
+  color: #b7791f;
 }
 
 .out-of-stock {
-  color: #dc2626;
+  color: #a33a2b;
 }
 
 .stock-controls {
@@ -97,8 +101,16 @@ th {
   width: 100%;
   box-sizing: border-box;
   padding: 9px;
-  border: 1px solid #ccc;
+  border: 1px solid #d8c5b3;
   border-radius: 6px;
+  background: #fffdfb;
+  color: #4b2a16;
+}
+
+.stock-controls input:focus {
+  outline: none;
+  border-color: #8b4513;
+  box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.1);
 }
 
 .stock-buttons {
@@ -116,13 +128,21 @@ th {
 }
 
 .add-button {
-  background: #16a34a;
+  background: #8b4513;
   color: white;
 }
 
+.add-button:hover {
+  background: #75ff5a;
+}
+
 .reduce-button {
-  background: #dc2626;
+  background: #a0522d;
   color: white;
+}
+
+.reduce-button:hover {
+  background: #aba134;
 }
 
 .stock-buttons button:disabled {
@@ -130,22 +150,63 @@ th {
   cursor: not-allowed;
 }
 
+/* ==========================================
+   DELETE PRODUCT BUTTON
+========================================== */
+
+.delete-button {
+  background: #8B4513;
+  color: #ffffff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  margin: 0;
+  box-shadow: 0 2px 6px rgba(139, 69, 19, 0.18);
+}
+
+.delete-button:hover {
+  background: #ff0c0c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(139, 69, 19, 0.25);
+}
+
+.delete-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(139, 69, 19, 0.2);
+}
+
+.delete-button:disabled {
+  background: #c8b8ad;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
+}
+
 .loading {
   padding: 30px;
   text-align: center;
+  color: #6f5542;
 }
 
 .error-message {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #f8e3df;
+  color: #8f2f22;
   padding: 15px;
   border-radius: 8px;
+  border: 1px solid #e5b8b0;
 }
 
 .no-products {
   text-align: center;
   padding: 30px;
-  color: #777;
+  color: #806a58;
 }
 
 /* ==========================================
@@ -158,8 +219,12 @@ th {
   border-radius: 7px;
   cursor: pointer;
   font-weight: 600;
-  background: #222;
+  background: #8b4513;
   color: white;
+}
+
+.refresh-button:hover {
+  background: #6f350f;
 }
 
 
@@ -168,8 +233,8 @@ th {
 ========================================== */
 
 .low-stock-alert {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  background: #fbf0df;
+  border: 1px solid #e3c69c;
   border-radius: 10px;
   padding: 16px 20px;
   margin-bottom: 25px;
@@ -178,6 +243,7 @@ th {
 .alert-title {
   font-weight: 700;
   margin-bottom: 10px;
+  color: #7a4a18;
 }
 
 .low-stock-list {
@@ -187,10 +253,11 @@ th {
 }
 
 .low-stock-item {
-  background: white;
-  border: 1px solid #fed7aa;
+  background: #fffaf5;
+  border: 1px solid #e3c69c;
   padding: 7px 10px;
   border-radius: 6px;
+  color: #6b4320;
 }
 
 
@@ -206,15 +273,16 @@ th {
 }
 
 .summary-card {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(92, 50, 24, 0.08);
+  border-top: 3px solid #8b4513;
 }
 
 .summary-label {
   display: block;
-  color: #666;
+  color: #806a58;
   font-size: 14px;
   margin-bottom: 8px;
 }
@@ -223,10 +291,11 @@ th {
   display: block;
   font-size: 25px;
   margin-bottom: 7px;
+  color: #5c3218;
 }
 
 .summary-card small {
-  color: #888;
+  color: #9a8574;
 }
 
 
@@ -242,10 +311,10 @@ th {
 }
 
 .analytics-card {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(92, 50, 24, 0.08);
 }
 
 .section-header {
@@ -254,11 +323,12 @@ th {
 
 .section-header h2 {
   margin: 0;
+  color: #5c3218;
 }
 
 .section-header p {
   margin-top: 5px;
-  color: #777;
+  color: #806a58;
 }
 
 
@@ -288,6 +358,7 @@ th {
   font-size: 10px;
   margin-bottom: 5px;
   white-space: nowrap;
+  color: #6f5542;
 }
 
 .bar-container {
@@ -301,12 +372,13 @@ th {
   width: 100%;
   min-height: 8px;
   border-radius: 5px 5px 0 0;
-  background: #222;
+  background: #8b4513;
 }
 
 .chart-label {
   font-size: 11px;
   margin-top: 8px;
+  color: #806a58;
 }
 
 
@@ -319,7 +391,7 @@ th {
   align-items: center;
   gap: 12px;
   padding: 13px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eadfd4;
 }
 
 .seller-rank {
@@ -329,7 +401,8 @@ th {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #f1f1f1;
+  background: #f3e8dc;
+  color: #6b3818;
   font-weight: 700;
 }
 
@@ -339,16 +412,18 @@ th {
 
 .seller-info strong {
   display: block;
+  color: #5c3218;
 }
 
 .seller-info small {
   display: block;
-  color: #777;
+  color: #806a58;
   margin-top: 3px;
 }
 
 .seller-revenue {
   white-space: nowrap;
+  color: #8b4513;
 }
 
 
@@ -363,7 +438,7 @@ th {
 .empty-state {
   padding: 40px 10px;
   text-align: center;
-  color: #777;
+  color: #806a58;
 }
 
 

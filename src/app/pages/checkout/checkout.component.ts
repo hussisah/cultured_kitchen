@@ -86,9 +86,12 @@ export class Checkout {
       items: this.storeService.getCart()
     }).subscribe({
       next: () => {
-        this.storeService.cart = [];
-        this.router.navigate(['/order-confirm']);
-      },
+  localStorage.setItem('customerName', this.customer.name.trim());
+
+  this.storeService.cart = [];
+
+  this.router.navigate(['/order-confirm']);
+},
       error: (err) => {
         console.log(err);
         alert('Order failed');

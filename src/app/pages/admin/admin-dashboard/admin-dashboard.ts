@@ -460,14 +460,38 @@ export class AdminDashboard implements OnInit {
 
   approveOrder(id: number) {
 
-    this.orderService
-      .approveOrder(id)
-      .subscribe(() => {
+  this.orderService
+    .approveOrder(id)
+    .subscribe({
+
+      next: (response) => {
+
+        alert(
+          'Order approved successfully. Sale has been recorded in the audit.'
+        );
 
         this.loadOrders();
+        this.loadProducts();
 
-      });
-  }
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Failed to approve order:',
+          error
+        );
+
+        alert(
+          error?.error?.error ||
+          'Failed to approve order.'
+        );
+
+      }
+
+    });
+
+}
 
 
   // =========================
@@ -632,16 +656,64 @@ export class AdminDashboard implements OnInit {
   // DELETE ORDER
   // =========================
 
-  deleteOrder(id: number) {
+deleteOrder(order: any) {
 
-    this.orderService
-      .deleteOrder(id)
-      .subscribe(() => {
+  // Only approved orders should be deleted
+  if (
+    String(order.status).toLowerCase() !== 'approved'
+  ) {
 
-        this.loadOrders();
+    alert(
+      'Only approved orders can be deleted.'
+    );
 
-      });
+    return;
   }
+
+  const confirmed = confirm(
+    `Delete ${order.customer_name}'s approved order from the dashboard?\n\n` +
+    `The sale will remain permanently recorded in the Sales Audit.`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  this.orderService
+    .deleteOrder(order.id)
+    .subscribe({
+
+      next: () => {
+
+        // Remove it from the visible dashboard
+        this.orders = this.orders.filter(
+          item => item.id !== order.id
+        );
+
+        this.cdr.detectChanges();
+
+        alert(
+          'Order removed from the dashboard. The sale remains in the audit.'
+        );
+
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Failed to delete order:',
+          error
+        );
+
+        alert(
+          error?.error?.error ||
+          'Failed to delete order.'
+        );
+
+      }
+
+    });
+}
 
 
   // =========================

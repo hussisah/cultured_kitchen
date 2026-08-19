@@ -496,10 +496,13 @@
           Reject
         </button>
 
-     <button
-  *ngIf="storeService.isCEO()"
+   <button
+  *ngIf="
+    (storeService.isCEO() || storeService.isSales()) &&
+    order.status?.toLowerCase() === 'approved'
+  "
   class="delete-btn"
-  (click)="deleteOrder(order.id)"
+  (click)="deleteOrder(order)"
 >
   Delete
 </button>

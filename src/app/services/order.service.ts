@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -9,38 +9,91 @@ export class OrderService {
 
   private apiUrl = 'http://localhost:3000/orders';
 
+  private auditUrl = 'http://localhost:3000/audit/sales';
+
   constructor(private http: HttpClient) {}
 
-  // Create order
+
+  // ==========================================
+  // CREATE ORDER
+  // ==========================================
+
   placeOrder(orderData: any) {
-    return this.http.post(this.apiUrl, orderData);
+
+    return this.http.post(
+      this.apiUrl,
+      orderData
+    );
   }
 
-  // Get all orders
+
+  // ==========================================
+  // GET ACTIVE ORDERS
+  // ==========================================
+
   getOrders(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+
+    return this.http.get<any[]>(
+      this.apiUrl
+    );
   }
 
-  // Approve order
+
+  // ==========================================
+  // GET COMPLETE SALES AUDIT
+  // CURRENT + ARCHIVED
+  // ==========================================
+
+  getSalesAudit(): Observable<any[]> {
+
+    return this.http.get<any[]>(
+      this.auditUrl
+    );
+  }
+
+
+  // ==========================================
+  // APPROVE ORDER
+  // ==========================================
+
   approveOrder(id: number) {
+
     return this.http.put(
       `${this.apiUrl}/${id}/approve`,
       {}
     );
   }
 
-  // Decline order
+
+  // ==========================================
+  // DECLINE ORDER
+  // ==========================================
+
   declineOrder(id: number) {
+
     return this.http.put(
       `${this.apiUrl}/${id}/decline`,
       {}
     );
   }
 
-  // Delete order
+
+  // ==========================================
+  // DELETE / ARCHIVE ORDER
+  // ==========================================
+
   deleteOrder(id: number) {
+
+    const role =
+      localStorage.getItem('adminRole') || '';
+
+    const headers = new HttpHeaders({
+      'x-admin-role': role
+    });
+
     return this.http.delete(
-      `${this.apiUrl}/${id}`
+      `${this.apiUrl}/${id}`,
+      { headers }
     );
   }
 }

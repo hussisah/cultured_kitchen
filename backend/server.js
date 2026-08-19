@@ -386,7 +386,8 @@ app.get('/orders', async (req, res) => {
 
 // =========================
 // APPROVE ORDER
-// REDUCES REAL INVENTORY
+// REDUCES INVENTORY
+// CREATES PERMANENT SALE
 // =========================
 
 app.put('/orders/:id/approve', async (req, res) => {
@@ -397,10 +398,14 @@ app.put('/orders/:id/approve', async (req, res) => {
 
   try {
 
-    // Start transaction
+    // START TRANSACTION
     await client.query('BEGIN');
 
-    // Get the order
+
+    // =========================
+    // GET ORDER
+    // =========================
+
     const orderResult = await client.query(
       'SELECT * FROM orders WHERE id = $1 FOR UPDATE',
       [id]
@@ -413,11 +418,16 @@ app.put('/orders/:id/approve', async (req, res) => {
       return res.status(404).json({
         error: 'Order not found'
       });
+
     }
 
     const order = orderResult.rows[0];
 
-    // Prevent approving an already approved order
+
+    // =========================
+    // PREVENT DOUBLE APPROVAL
+    // =========================
+
     if (order.status === 'Approved') {
 
       await client.query('ROLLBACK');
@@ -425,9 +435,14 @@ app.put('/orders/:id/approve', async (req, res) => {
       return res.status(400).json({
         error: 'Order is already approved'
       });
+
     }
 
-    // Prevent approving a declined order
+
+    // =========================
+    // PREVENT APPROVING DECLINED ORDER
+    // =========================
+
     if (order.status === 'Declined') {
 
       await client.query('ROLLBACK');
@@ -435,16 +450,22 @@ app.put('/orders/:id/approve', async (req, res) => {
       return res.status(400).json({
         error: 'Declined orders cannot be approved'
       });
+
     }
+
+
+    // =========================
+    // GET ORDER ITEMS
+    // =========================
 
     const items = Array.isArray(order.items)
       ? order.items
       : JSON.parse(order.items || '[]');
 
 
-    // ==========================================
-    // CHECK STOCK FOR EVERY PRODUCT FIRST
-    // ==========================================
+    // =========================
+    // CHECK STOCK
+    // =========================
 
     for (const item of items) {
 
@@ -458,12 +479,15 @@ app.put('/orders/:id/approve', async (req, res) => {
         return res.status(400).json({
           error: 'Invalid product information in order'
         });
+
       }
+
 
       const productResult = await client.query(
         'SELECT * FROM products WHERE id = $1 FOR UPDATE',
         [productId]
       );
+
 
       if (productResult.rows.length === 0) {
 
@@ -472,29 +496,37 @@ app.put('/orders/:id/approve', async (req, res) => {
         return res.status(400).json({
           error: `Product with ID ${productId} was not found`
         });
+
       }
+
 
       const product = productResult.rows[0];
 
-      if (product.stock < quantity) {
+
+      if (Number(product.stock) < quantity) {
 
         await client.query('ROLLBACK');
 
         return res.status(400).json({
-          error: `Not enough stock for ${product.name}. Available: ${product.stock}, requested: ${quantity}`
+          error:
+            `Not enough stock for ${product.name}. ` +
+            `Available: ${product.stock}, requested: ${quantity}`
         });
+
       }
+
     }
 
 
-    // ==========================================
-    // REDUCE STOCK
-    // ==========================================
+    // =========================
+    // REDUCE INVENTORY
+    // =========================
 
     for (const item of items) {
 
       const productId = Number(item.id);
       const quantity = Number(item.quantity || 0);
+
 
       await client.query(
         `
@@ -504,48 +536,112 @@ app.put('/orders/:id/approve', async (req, res) => {
           updated_at = CURRENT_TIMESTAMP
         WHERE id = $2
         `,
-        [quantity, productId]
+        [
+          quantity,
+          productId
+        ]
       );
+
     }
 
 
-    // ==========================================
-    // APPROVE ORDER
-    // ==========================================
+    // =========================
+    // MARK ORDER AS APPROVED
+    // =========================
 
-    const updatedOrder = await client.query(
+    const updatedOrderResult = await client.query(
+  `
+  UPDATE orders
+  SET status = 'Approved'
+  WHERE id = $1
+  RETURNING *
+  `,
+  [id]
+);
+
+
+    const updatedOrder = updatedOrderResult.rows[0];
+
+
+    // =========================
+    // CREATE PERMANENT SALE
+    // =========================
+
+    await client.query(
       `
-      UPDATE orders
-      SET status = 'Approved'
-      WHERE id = $1
-      RETURNING *
+      INSERT INTO sales (
+        order_id,
+        customer_name,
+        email,
+        phone,
+        whatsapp,
+        delivery_type,
+        delivery_address,
+        total_amount,
+        items,
+        approved_at
+      )
+      VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        $8,
+        $9::jsonb,
+        CURRENT_TIMESTAMP
+      )
+      ON CONFLICT (order_id) DO NOTHING
       `,
-      [id]
+      [
+        updatedOrder.id,
+        updatedOrder.customer_name,
+        updatedOrder.email,
+        updatedOrder.phone,
+        updatedOrder.whatsapp,
+        updatedOrder.delivery_type,
+        updatedOrder.delivery_address,
+        updatedOrder.total_amount,
+        JSON.stringify(items)
+      ]
     );
 
 
-    // Commit everything
+    // =========================
+    // COMMIT EVERYTHING
+    // =========================
+
     await client.query('COMMIT');
 
+
     res.json({
-      message: 'Order approved and stock updated',
-      order: updatedOrder.rows[0]
+      message: 'Order approved, inventory updated and sale recorded',
+      order: updatedOrder
     });
+
 
   } catch (error) {
 
     await client.query('ROLLBACK');
 
-    console.error('Approve order error:', error);
+    console.error(
+      'Approve order error:',
+      error
+    );
 
     res.status(500).json({
       error: 'Failed to approve order'
     });
 
+
   } finally {
 
     client.release();
+
   }
+
 });
 
 
@@ -581,31 +677,255 @@ app.put('/orders/:id/decline', async (req, res) => {
 
 // =========================
 // DELETE ORDER
+// APPROVED ORDERS ARE ARCHIVED
+// CEO AND SALES ONLY
 // =========================
 
 app.delete('/orders/:id', async (req, res) => {
 
   const { id } = req.params;
+  const role = req.headers['x-admin-role'];
+
+  // Only CEO and Sales can delete orders
+  if (role !== 'CEO' && role !== 'Sales') {
+    return res.status(403).json({
+      error: 'CEO or Sales access required'
+    });
+  }
+
+  const client = await pool.connect();
 
   try {
 
-    await pool.query(
+    await client.query('BEGIN');
+
+    // Get the order first
+    const orderResult = await client.query(
+      'SELECT * FROM orders WHERE id = $1 FOR UPDATE',
+      [id]
+    );
+
+    if (orderResult.rows.length === 0) {
+
+      await client.query('ROLLBACK');
+
+      return res.status(404).json({
+        error: 'Order not found'
+      });
+    }
+
+    const order = orderResult.rows[0];
+
+    // ==========================================
+    // ONLY APPROVED ORDERS CAN BE DELETED
+    // ==========================================
+
+    if (String(order.status).toLowerCase() !== 'approved') {
+
+      await client.query('ROLLBACK');
+
+      return res.status(400).json({
+        error: 'Only approved orders can be deleted from the order list.'
+      });
+    }
+
+    // ==========================================
+    // CHECK IF ALREADY ARCHIVED
+    // ==========================================
+
+    const existingArchive = await client.query(
+      `
+      SELECT id
+      FROM sales_archive
+      WHERE original_order_id = $1
+      LIMIT 1
+      `,
+      [id]
+    );
+
+    if (existingArchive.rows.length === 0) {
+
+      // ==========================================
+      // SAVE APPROVED ORDER TO SALES ARCHIVE
+      // ==========================================
+
+      await client.query(
+        `
+        INSERT INTO sales_archive (
+          original_order_id,
+          customer_name,
+          email,
+          phone,
+          whatsapp,
+          delivery_type,
+          delivery_address,
+          payment_proof,
+          total_amount,
+          items,
+          status,
+          created_at
+        )
+        VALUES (
+          $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+        )
+        `,
+        [
+          order.id,
+          order.customer_name,
+          order.email,
+          order.phone,
+          order.whatsapp,
+          order.delivery_type,
+          order.delivery_address,
+          order.payment_proof,
+          order.total_amount,
+          JSON.stringify(
+            Array.isArray(order.items)
+              ? order.items
+              : JSON.parse(order.items || '[]')
+          ),
+          order.status,
+          order.created_at
+        ]
+      );
+    }
+
+    // ==========================================
+    // NOW DELETE FROM ACTIVE ORDERS
+    // ==========================================
+
+    await client.query(
       'DELETE FROM orders WHERE id = $1',
       [id]
     );
 
+    await client.query('COMMIT');
+
     res.json({
-      message: 'Order deleted'
+      message: 'Approved order archived and removed from active orders.'
     });
 
   } catch (error) {
 
-    console.error(error);
+    await client.query('ROLLBACK');
+
+    console.error(
+      'Archive/delete order error:',
+      error
+    );
 
     res.status(500).json({
-      error: 'Failed to delete order'
+      error: 'Failed to archive and delete order'
+    });
+
+  } finally {
+
+    client.release();
+  }
+});
+
+// =========================
+// GET SALES AUDIT
+// CURRENT + ARCHIVED APPROVED ORDERS
+// =========================
+
+app.get('/audit/sales', async (req, res) => {
+
+  try {
+
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        id AS original_order_id,
+        customer_name,
+        email,
+        phone,
+        whatsapp,
+        delivery_type,
+        delivery_address,
+        payment_proof,
+        total_amount,
+        items,
+        status,
+        created_at,
+        FALSE AS archived,
+        NULL::timestamp AS archived_at
+      FROM orders
+      WHERE LOWER(status) = 'approved'
+
+      UNION ALL
+
+      SELECT
+        id,
+        original_order_id,
+        customer_name,
+        email,
+        phone,
+        whatsapp,
+        delivery_type,
+        delivery_address,
+        payment_proof,
+        total_amount,
+        items,
+        status,
+        created_at,
+        TRUE AS archived,
+        archived_at
+      FROM sales_archive
+      WHERE LOWER(status) = 'approved'
+
+      ORDER BY created_at DESC
+      `
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+
+    console.error(
+      'Sales audit error:',
+      error
+    );
+
+    res.status(500).json({
+      error: 'Failed to fetch sales audit'
     });
   }
+});
+
+// =========================
+// GET ALL SALES
+// PERMANENT AUDIT RECORDS
+// =========================
+
+app.get('/sales', async (req, res) => {
+
+  try {
+
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM sales
+      ORDER BY approved_at DESC
+      `
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+
+    console.error(
+      'Failed to fetch sales:',
+      error
+    );
+
+    res.status(500).json({
+      error: 'Failed to fetch sales'
+    });
+
+  }
+
 });
 // =========================
 // GET ALL CATEGORIES

@@ -17,10 +17,20 @@ interface OrderItem {
 
 interface Order {
   id: number;
+  original_order_id?: number;
   total_amount: number | string;
   status: string;
   created_at: string;
   items: OrderItem[];
+  archived?: boolean;
+  archived_at?: string;
+  customer_name?: string;
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+  delivery_type?: string;
+  delivery_address?: string;
+  payment_proof?: string;
 }
 
 interface BestSeller {
@@ -147,55 +157,66 @@ export class AuditTab implements OnInit {
   }
 
 
-  // ==========================================
-  // LOAD ORDERS
-  // ==========================================
+// ==========================================
+// LOAD SALES AUDIT
+// CURRENT + ARCHIVED APPROVED ORDERS
+// ==========================================
 
-  loadOrders(): void {
+loadOrders(): void {
 
-    this.loadingOrders = true;
-    this.orderError = '';
+  this.loadingOrders = true;
+  this.orderError = '';
 
-    this.orderService.getOrders().subscribe({
+  this.orderService.getSalesAudit().subscribe({
 
-      next: (data: any) => {
+    next: (data: any) => {
 
-        this.orders = Array.isArray(data)
-          ? data.map((order: any) => ({
-              ...order,
-              total_amount: Number(order.total_amount),
-              items: Array.isArray(order.items)
+      this.orders = Array.isArray(data)
+        ? data.map((order: any) => ({
+
+            ...order,
+
+            total_amount:
+              Number(order.total_amount),
+
+            items:
+              Array.isArray(order.items)
                 ? order.items
-                : []
-            }))
-          : [];
+                : [],
 
-        this.calculateAnalytics();
+            created_at:
+              order.created_at,
 
-        this.loadingOrders = false;
+            archived:
+              Boolean(order.archived)
 
-        // Force Angular to update the page
-        this.cdr.detectChanges();
-      },
+          }))
+        : [];
 
-      error: (error) => {
+      this.calculateAnalytics();
 
-        console.error(
-          'Failed to load orders:',
-          error
-        );
+      this.loadingOrders = false;
 
-        this.orderError =
-          'Failed to load sales data.';
+      this.cdr.detectChanges();
+    },
 
-        this.loadingOrders = false;
+    error: (error) => {
 
-        // Force Angular to update the page
-        this.cdr.detectChanges();
-      }
+      console.error(
+        'Failed to load sales audit:',
+        error
+      );
 
-    });
-  }
+      this.orderError =
+        'Failed to load sales audit data.';
+
+      this.loadingOrders = false;
+
+      this.cdr.detectChanges();
+    }
+
+  });
+}
 
 
   // ==========================================

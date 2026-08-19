@@ -9,5 +9,11 @@ import { RouterModule } from '@angular/router';
   styleUrl: './order-confirm.component.css',
 })
 export class OrderConfirm {
-   customerName = localStorage.getItem('customerName');
+
+  customerName = '';
+
+  constructor() {
+    this.customerName =
+      localStorage.getItem('customerName') || 'Customer';
+  }
 }
