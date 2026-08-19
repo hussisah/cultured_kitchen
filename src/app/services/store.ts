@@ -1,4 +1,9 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import {
+  Injectable,
+  inject,
+  PLATFORM_ID,
+  signal
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Product } from '../models/product.model';
 
@@ -15,6 +20,7 @@ export class StoreService {
   products: Product[] = [];
 
   cart: any[] = [];
+  cartItemCount = signal(0);
   orders: any[] = [];
   soldProducts: { [key: string]: number } = {};
 
@@ -68,18 +74,19 @@ export class StoreService {
   }
 
 
-  deleteProduct(productId: number) {
+ deleteProduct(productId: number) {
 
-    this.products = this.products.filter(
-      product => product.id !== productId
-    );
+  this.products = this.products.filter(
+    product => product.id !== productId
+  );
 
-    // Also remove deleted product from cart
-    this.cart = this.cart.filter(
-      item => item.id !== productId
-    );
-  }
+  this.cart = this.cart.filter(
+    item => item.id !== productId
+  );
 
+  // UPDATE NAVBAR CART NOTIFICATION
+  this.updateCartCount();
+}
 
   // ==========================================
   // STOCK
@@ -159,54 +166,68 @@ export class StoreService {
   // CART
   // ==========================================
 
-  addToCart(product: Product) {
+ addToCart(product: Product) {
 
-    const availableStock =
-      this.getAvailableStock(
-        product.id,
-        product.stock
-      );
+  const availableStock =
+    this.getAvailableStock(
+      product.id,
+      product.stock
+    );
 
-    if (availableStock <= 0) {
+  if (availableStock <= 0) {
 
-      alert('Out of stock');
+    alert('Out of stock');
+
+    return;
+  }
+
+  const existingItem =
+    this.cart.find(
+      item => item.id === product.id
+    );
+
+  if (existingItem) {
+
+    if (
+      existingItem.quantity >=
+      Number(product.stock)
+    ) {
+
+      alert('No more stock available');
 
       return;
     }
 
-    const existingItem =
-      this.cart.find(
-        item => item.id === product.id
-      );
+    existingItem.quantity++;
 
-    if (existingItem) {
+  } else {
 
-      if (
-        existingItem.quantity >=
-        Number(product.stock)
-      ) {
+    this.cart.push({
+      ...product,
+      quantity: 1
+    });
 
-        alert('No more stock available');
-
-        return;
-      }
-
-      existingItem.quantity++;
-
-    } else {
-
-      this.cart.push({
-        ...product,
-        quantity: 1
-      });
-
-    }
   }
+
+  // UPDATE NAVBAR CART NOTIFICATION
+  this.updateCartCount();
+}
 
 
   getCart() {
     return this.cart;
   }
+
+  private updateCartCount(): void {
+
+  const count = this.cart.reduce(
+    (total, item) =>
+      total + Number(item.quantity || 0),
+    0
+  );
+
+  this.cartItemCount.set(count);
+}
 
 
   getCartQuantity(productId: number): number {
@@ -224,60 +245,68 @@ export class StoreService {
 
   increaseQuantity(index: number) {
 
-    const item = this.cart[index];
+  const item = this.cart[index];
 
-    if (!item) {
-      return;
-    }
-
-    const availableStock =
-      Number(item.stock) -
-      Number(item.quantity);
-
-    if (availableStock <= 0) {
-
-      alert('No more stock available');
-
-      return;
-    }
-
-    item.quantity++;
+  if (!item) {
+    return;
   }
 
+  const availableStock =
+    Number(item.stock) -
+    Number(item.quantity);
 
-  decreaseQuantity(index: number) {
+  if (availableStock <= 0) {
 
-    const item = this.cart[index];
+    alert('No more stock available');
 
-    if (!item) {
-      return;
-    }
-
-    if (item.quantity > 1) {
-
-      item.quantity--;
-
-    } else {
-
-      this.removeFromCart(index);
-
-    }
+    return;
   }
 
+  item.quantity++;
 
-  removeFromCart(index: number) {
+  // UPDATE NAVBAR CART NOTIFICATION
+  this.updateCartCount();
+}
 
-    if (
-      index < 0 ||
-      index >= this.cart.length
-    ) {
 
-      return;
-    }
+ decreaseQuantity(index: number) {
 
-    this.cart.splice(index, 1);
+  const item = this.cart[index];
+
+  if (!item) {
+    return;
   }
 
+  if (item.quantity > 1) {
+
+    item.quantity--;
+
+    // UPDATE NAVBAR CART NOTIFICATION
+    this.updateCartCount();
+
+  } else {
+
+    this.removeFromCart(index);
+
+  }
+}
+
+
+ removeFromCart(index: number) {
+
+  if (
+    index < 0 ||
+    index >= this.cart.length
+  ) {
+
+    return;
+  }
+
+  this.cart.splice(index, 1);
+
+  // UPDATE NAVBAR CART NOTIFICATION
+  this.updateCartCount();
+}
 
   getTotal() {
 

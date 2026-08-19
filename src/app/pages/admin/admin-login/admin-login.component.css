@@ -1,20 +1,189 @@
+/* ==========================================
+   ADMIN LOGIN PAGE
+   CULTURED KITCHEN THEME
+========================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f7f1eb;
+}
+
+
+/* ==========================================
+   LOGIN CONTAINER
+========================================== */
+
 .login-container {
-  width: 350px;
+  width: 380px;
+  max-width: calc(100% - 40px);
+
   margin: 100px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
+
+  padding: 40px;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  border-top: 5px solid #8B4513;
+
+  box-shadow:
+    0 10px 30px rgba(91, 52, 24, 0.12);
+
+  box-sizing: border-box;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
+
+/* ==========================================
+   TITLE
+========================================== */
+
+.login-container h2 {
+  margin: 0 0 8px;
+
+  text-align: center;
+
+  color: #5a2d12;
+
+  font-size: 28px;
+
+  font-weight: 700;
 }
 
-button {
-  width: 100%;
+
+/* Small decorative line under title */
+
+.login-container h2::after {
+  content: "";
+
+  display: block;
+
+  width: 45px;
+  height: 3px;
+
+  margin: 12px auto 28px;
+
   background: #8B4513;
-  color: white;
-  padding: 14px;
+
+  border-radius: 10px;
+}
+
+
+/* ==========================================
+   INPUTS
+========================================== */
+
+.login-container input {
+  width: 100%;
+
+  padding: 13px 15px;
+
+  margin-bottom: 16px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d8c8bb;
+
+  border-radius: 9px;
+
+  background: #fffdfb;
+
+  color: #333;
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.login-container input::placeholder {
+  color: #9a8b80;
+}
+
+
+.login-container input:focus {
+  border-color: #8B4513;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 3px rgba(139, 69, 19, 0.10);
+}
+
+
+/* ==========================================
+   LOGIN BUTTON
+========================================== */
+
+.login-container button {
+  width: 100%;
+
+  padding: 13px 16px;
+
+  margin-top: 5px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #8B4513;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.login-container button:hover {
+  background: #6f350f;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 12px rgba(139, 69, 19, 0.22);
+}
+
+
+.login-container button:active {
+  transform: translateY(0);
+
+  box-shadow: none;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+  .login-container {
+    width: auto;
+
+    max-width: calc(100% - 30px);
+
+    margin: 60px auto;
+
+    padding: 30px 22px;
+  }
+
+  .login-container h2 {
+    font-size: 24px;
+  }
+
 }

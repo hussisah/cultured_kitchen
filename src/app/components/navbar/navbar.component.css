@@ -193,22 +193,51 @@
 }
 
 
-/* =========================================================
+/* ==========================================
    CART BUTTON
-   ========================================================= */
+========================================== */
 
 .cart-btn {
-  background: #e30613 !important;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 
-  color: white !important;
+.cart-icon {
+  font-size: 17px;
+}
 
-  padding:
-    10px 18px !important;
 
-  border-radius: 25px !important;
+/* ==========================================
+   CART NOTIFICATION BADGE
+========================================== */
 
-  box-shadow:
-    0 4px 12px rgba(227, 6, 19, 0.25);
+.cart-badge {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+
+  min-width: 20px;
+  height: 20px;
+
+  padding: 0 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #8B4513;
+  color: #ffffff;
+
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+
+  box-sizing: border-box;
 }
 
 
