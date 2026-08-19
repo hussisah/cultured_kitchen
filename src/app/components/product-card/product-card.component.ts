@@ -9,6 +9,9 @@ import { Product } from '../../models/product.model';
 
 import { StoreService } from '../../services/store';
 
+
+
+
 @Component({
 
   selector: 'app-product-card',
@@ -26,6 +29,8 @@ import { StoreService } from '../../services/store';
     './product-card.component.css'
 
 })
+
+
 export class ProductCardComponent {
 
   @Input()
@@ -33,7 +38,11 @@ export class ProductCardComponent {
 
 
   constructor(
-    public storeService: StoreService
+
+    public storeService: StoreService,
+
+
+
   ) {}
 
 
@@ -43,11 +52,9 @@ export class ProductCardComponent {
 
   addToCart() {
 
-    this.storeService.addToCart(
-      this.product
-    );
+  this.storeService.addToCart(this.product);
 
-  }
+}
 
 
   // ==========================================
@@ -57,8 +64,11 @@ export class ProductCardComponent {
   get availableStock(): number {
 
     return this.storeService.getAvailableStock(
+
       this.product.id,
+
       Number(this.product.stock)
+
     );
 
   }

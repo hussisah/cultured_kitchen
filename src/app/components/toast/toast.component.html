@@ -1,1 +1,9 @@
-<p>toast works!</p>
+@if (toastService.visible()) {
+  <div class="toast">
+    <span class="toast-icon">✓</span>
+
+    <span class="toast-message">
+      {{ toastService.message() }}
+    </span>
+  </div>
+}

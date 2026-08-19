@@ -4,8 +4,13 @@ import {
   PLATFORM_ID,
   signal
 } from '@angular/core';
+
 import { isPlatformBrowser } from '@angular/common';
+
 import { Product } from '../models/product.model';
+
+import { ToastService } from './toast.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,20 +18,44 @@ import { Product } from '../models/product.model';
 export class StoreService {
 
   private platformId = inject(PLATFORM_ID);
-  private isBrowser = isPlatformBrowser(this.platformId);
 
-  // This is no longer used as the main source of shop inventory.
-  // Products now come from PostgreSQL through ProductsService.
+  private isBrowser =
+    isPlatformBrowser(this.platformId);
+
+
+  // ==========================================
+  // PRODUCTS
+  // ==========================================
+
   products: Product[] = [];
 
+
+  // ==========================================
+  // CART
+  // ==========================================
+
   cart: any[] = [];
+
   cartItemCount = signal(0);
+
+
+  // ==========================================
+  // ORDERS / SALES
+  // ==========================================
+
   orders: any[] = [];
-  soldProducts: { [key: string]: number } = {};
+
+  soldProducts: {
+    [key: string]: number
+  } = {};
+
 
   salesPeople: any[] = [];
 
-  constructor() {
+
+  constructor(
+    private toastService: ToastService
+  ) {
 
     if (this.isBrowser) {
 
@@ -52,6 +81,24 @@ export class StoreService {
       ];
 
     }
+
+  }
+
+
+  // ==========================================
+  // UPDATE CART COUNT
+  // ==========================================
+
+  private updateCartCount(): void {
+
+    const count =
+      this.cart.reduce(
+        (total: number, item: any) =>
+          total + Number(item.quantity),
+        0
+      );
+
+    this.cartItemCount.set(count);
   }
 
 
@@ -60,33 +107,46 @@ export class StoreService {
   // ==========================================
 
   getProducts() {
+
     return this.products;
+
   }
 
 
   setProducts(products: Product[]) {
+
     this.products = products;
+
   }
 
 
   addProduct(product: Product) {
+
     this.products.push(product);
+
   }
 
 
- deleteProduct(productId: number) {
+  deleteProduct(productId: number) {
 
-  this.products = this.products.filter(
-    product => product.id !== productId
-  );
+    this.products =
+      this.products.filter(
+        product =>
+          product.id !== productId
+      );
 
-  this.cart = this.cart.filter(
-    item => item.id !== productId
-  );
 
-  // UPDATE NAVBAR CART NOTIFICATION
-  this.updateCartCount();
-}
+    this.cart =
+      this.cart.filter(
+        item =>
+          item.id !== productId
+      );
+
+
+    this.updateCartCount();
+
+  }
+
 
   // ==========================================
   // STOCK
@@ -97,13 +157,19 @@ export class StoreService {
     amount: number
   ) {
 
-    const product = this.products.find(
-      product => product.id === productId
-    );
+    const product =
+      this.products.find(
+        product =>
+          product.id === productId
+      );
+
 
     if (product) {
+
       product.stock += amount;
+
     }
+
   }
 
 
@@ -112,15 +178,26 @@ export class StoreService {
     amount: number
   ) {
 
-    const product = this.products.find(
-      product => product.id === productId
-    );
+    const product =
+      this.products.find(
+        product =>
+          product.id === productId
+      );
 
-    if (product && product.stock >= amount) {
+
+    if (
+      product &&
+      product.stock >= amount
+    ) {
+
       product.stock -= amount;
+
     } else {
+
       alert('Not enough stock');
+
     }
+
   }
 
 
@@ -135,8 +212,10 @@ export class StoreService {
 
     const product =
       this.products.find(
-        p => p.id === productId
+        p =>
+          p.id === productId
       );
+
 
     const stock =
       currentStock !== undefined
@@ -145,178 +224,278 @@ export class StoreService {
           ? Number(product.stock)
           : 0;
 
+
     const cartItem =
       this.cart.find(
-        item => item.id === productId
+        item =>
+          item.id === productId
       );
+
 
     const cartQuantity =
       cartItem
         ? Number(cartItem.quantity)
         : 0;
 
+
     return Math.max(
       0,
       stock - cartQuantity
     );
+
   }
 
 
   // ==========================================
-  // CART
+  // ADD TO CART
   // ==========================================
 
- addToCart(product: Product) {
+  addToCart(product: Product) {
 
-  const availableStock =
-    this.getAvailableStock(
-      product.id,
-      product.stock
-    );
+    const availableStock =
+      this.getAvailableStock(
+        product.id,
+        Number(product.stock)
+      );
 
-  if (availableStock <= 0) {
 
-    alert('Out of stock');
+    if (availableStock <= 0) {
 
-    return;
-  }
-
-  const existingItem =
-    this.cart.find(
-      item => item.id === product.id
-    );
-
-  if (existingItem) {
-
-    if (
-      existingItem.quantity >=
-      Number(product.stock)
-    ) {
-
-      alert('No more stock available');
+      this.toastService.show(
+        'No more stock available'
+      );
 
       return;
+
     }
 
-    existingItem.quantity++;
 
-  } else {
+    const existingItem =
+      this.cart.find(
+        item =>
+          item.id === product.id
+      );
 
-    this.cart.push({
-      ...product,
-      quantity: 1
-    });
+
+    if (existingItem) {
+
+      if (
+        Number(existingItem.quantity) >=
+        Number(product.stock)
+      ) {
+
+        this.toastService.show(
+          'No more stock available'
+        );
+
+        return;
+
+      }
+
+
+      existingItem.quantity++;
+
+
+      this.updateCartCount();
+
+
+      this.toastService.show(
+        `${product.name} quantity increased`
+      );
+
+
+    } else {
+
+      this.cart.push({
+        ...product,
+        quantity: 1
+      });
+
+
+      this.updateCartCount();
+
+
+      this.toastService.show(
+        `${product.name} added to cart`
+      );
+
+    }
 
   }
 
-  // UPDATE NAVBAR CART NOTIFICATION
-  this.updateCartCount();
-}
 
+  // ==========================================
+  // GET CART
+  // ==========================================
 
   getCart() {
+
     return this.cart;
+
   }
 
-  private updateCartCount(): void {
 
-  const count = this.cart.reduce(
-    (total, item) =>
-      total + Number(item.quantity || 0),
-    0
-  );
+  // ==========================================
+  // GET PRODUCT CART QUANTITY
+  // ==========================================
 
-  this.cartItemCount.set(count);
-}
-
-
-  getCartQuantity(productId: number): number {
+  getCartQuantity(
+    productId: number
+  ): number {
 
     const item =
       this.cart.find(
-        item => item.id === productId
+        item =>
+          item.id === productId
       );
+
 
     return item
       ? Number(item.quantity)
       : 0;
+
   }
 
+
+  // ==========================================
+  // INCREASE QUANTITY
+  // ==========================================
 
   increaseQuantity(index: number) {
 
-  const item = this.cart[index];
-
-  if (!item) {
-    return;
-  }
-
-  const availableStock =
-    Number(item.stock) -
-    Number(item.quantity);
-
-  if (availableStock <= 0) {
-
-    alert('No more stock available');
-
-    return;
-  }
-
-  item.quantity++;
-
-  // UPDATE NAVBAR CART NOTIFICATION
-  this.updateCartCount();
-}
+    const item =
+      this.cart[index];
 
 
- decreaseQuantity(index: number) {
+    if (!item) {
 
-  const item = this.cart[index];
+      return;
 
-  if (!item) {
-    return;
-  }
+    }
 
-  if (item.quantity > 1) {
 
-    item.quantity--;
+    const availableStock =
+      Number(item.stock) -
+      Number(item.quantity);
 
-    // UPDATE NAVBAR CART NOTIFICATION
+
+    if (availableStock <= 0) {
+
+      this.toastService.show(
+        'No more stock available'
+      );
+
+      return;
+
+    }
+
+
+    item.quantity++;
+
+
     this.updateCartCount();
 
-  } else {
 
-    this.removeFromCart(index);
+    this.toastService.show(
+      `${item.name} quantity increased`
+    );
 
   }
-}
 
 
- removeFromCart(index: number) {
+  // ==========================================
+  // DECREASE QUANTITY
+  // ==========================================
 
-  if (
-    index < 0 ||
-    index >= this.cart.length
-  ) {
+  decreaseQuantity(index: number) {
 
-    return;
+    const item =
+      this.cart[index];
+
+
+    if (!item) {
+
+      return;
+
+    }
+
+
+    if (
+      Number(item.quantity) > 1
+    ) {
+
+      item.quantity--;
+
+
+      this.updateCartCount();
+
+
+      this.toastService.show(
+        `${item.name} quantity reduced`
+      );
+
+
+    } else {
+
+      this.removeFromCart(index);
+
+    }
+
   }
 
-  this.cart.splice(index, 1);
 
-  // UPDATE NAVBAR CART NOTIFICATION
-  this.updateCartCount();
-}
+  // ==========================================
+  // REMOVE FROM CART
+  // ==========================================
+
+  removeFromCart(index: number) {
+
+    if (
+      index < 0 ||
+      index >= this.cart.length
+    ) {
+
+      return;
+
+    }
+
+
+    const item =
+      this.cart[index];
+
+
+    this.cart.splice(index, 1);
+
+
+    this.updateCartCount();
+
+
+    this.toastService.show(
+      `${item.name} removed from cart`
+    );
+
+  }
+
+
+  // ==========================================
+  // TOTAL
+  // ==========================================
 
   getTotal() {
 
     return this.cart.reduce(
-      (total, item) =>
+      (
+        total: number,
+        item: any
+      ) =>
         total +
-        (Number(item.price) *
-        Number(item.quantity)),
+        (
+          Number(item.price) *
+          Number(item.quantity)
+        ),
       0
     );
+
   }
 
 
@@ -327,28 +506,38 @@ export class StoreService {
   getRole(): string {
 
     if (!this.isBrowser) {
+
       return '';
+
     }
 
+
     return (
-      localStorage.getItem('adminRole') || ''
+      localStorage.getItem(
+        'adminRole'
+      ) || ''
     );
+
   }
 
 
   isCEO(): boolean {
 
     return (
-      this.getRole().trim() === 'CEO'
+      this.getRole().trim() ===
+      'CEO'
     );
+
   }
 
 
   isSales(): boolean {
 
     return (
-      this.getRole().trim() === 'SALES'
+      this.getRole().trim() ===
+      'SALES'
     );
+
   }
 
 
@@ -357,7 +546,9 @@ export class StoreService {
   // ==========================================
 
   getSalesAnalytics() {
+
     return this.soldProducts;
+
   }
 
 
@@ -375,34 +566,47 @@ export class StoreService {
       password
     });
 
+
     if (this.isBrowser) {
 
       localStorage.setItem(
         'salesPeople',
-        JSON.stringify(this.salesPeople)
+        JSON.stringify(
+          this.salesPeople
+        )
       );
 
     }
+
   }
 
 
   deleteSalesPerson(index: number) {
 
-    this.salesPeople.splice(index, 1);
+    this.salesPeople.splice(
+      index,
+      1
+    );
+
 
     if (this.isBrowser) {
 
       localStorage.setItem(
         'salesPeople',
-        JSON.stringify(this.salesPeople)
+        JSON.stringify(
+          this.salesPeople
+        )
       );
 
     }
+
   }
 
 
   getSalesPeople() {
+
     return this.salesPeople;
+
   }
 
 }
